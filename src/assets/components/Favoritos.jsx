@@ -1,0 +1,2 @@
+// Los productos pueden ser marcados/desmarcados como favoritos. El estado de los productos favoritos se almacenara en un estado global. 
+// Mostrar unicamente los productos que el usuario ha marcado como favoritos.
