@@ -1,0 +1,2 @@
+// Mostrar un listado de productos en formato de tarjetas
+// Cada tarjeta incluira: ID, Imagen representativa, Nombre, Precio, Descripcion, Categoria, Boton para ver más detalles, Icono o checkbox para marcar como favorito
