@@ -1,58 +1,81 @@
-import React, { useContext, useState } from 'react';
-import { ProductoContext } from './ProductoContext';
-import { Link } from 'react-router-dom';
+// Los productos pueden ser marcados/desmarcados como favoritos. El estado de los productos favoritos se almacenara en un estado global. 
+// Mostrar unicamente los productos que el usuario ha marcado como favoritos.
+
+import { useContext, useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ProductoContext } from "./ProductoContext";
 
 function Favoritos() {
-  // Obtengo del contexto el listado de productos, los favoritos y la función para actualizar favoritos
-  const { productos, favoritos, setFavoritos } = useContext(ProductoContext);
-  const [mensaje, setMensaje] = useState('');
-  const productosFavoritos = productos.filter(p => favoritos.includes(p.id) && !p.eliminado);
+  const { favoritos, setFavoritos, productos, autenticado, usuarioActivo } = useContext(ProductoContext);
+  const [favoritosFiltrados, setFavoritosFiltrados] = useState([]);
+  const navigate = useNavigate();
 
-  // Función que se ejecuta al desmarcar un producto como favorito
-  const desmarcarFavorito = (id) => {
-    // Actualizo el estado global quitando el id del producto de la lista de favoritos
-    setFavoritos(favoritos.filter(f => f !== id));
-    setMensaje('Producto desmarcado como favorito!');
-    setTimeout(() => setMensaje(''), 3000);
+  useEffect(() => {
+    if (!autenticado || !usuarioActivo) return;
+
+    const favoritosStr = favoritos.map(f => String(f));
+    const favs = productos.filter(p =>
+      favoritosStr.includes(String(p.id)) && !p.eliminado
+    );
+
+    // Eliminar duplicados si hubiera
+    const sinDuplicados = favs.filter((prod, index, self) =>
+      index === self.findIndex(p => String(p.id) === String(prod.id))
+    );
+
+    setFavoritosFiltrados(sinDuplicados);
+  }, [favoritos, productos, autenticado, usuarioActivo]);
+
+  if (!autenticado || !usuarioActivo) {
+    return (
+      <div className="container mt-5 text-center">
+        <div className="alert alert-danger">
+          Debes iniciar sesión para ver tus productos favoritos.
+        </div>
+        <button className="btn btn-primary" onClick={() => navigate("/")}>
+          Ir a iniciar sesión
+        </button>
+      </div>
+    );
+  }
+
+  // Función para sacar producto de favoritos
+  const quitarFavorito = (id) => {
+    const idStr = String(id);
+    setFavoritos(favoritos.filter(favId => favId !== idStr));
   };
 
   return (
     <div className="container mt-4">
-      <h2>Mis productos favoritos</h2>
+      <h2 className="text-center mb-4">Mis Productos Favoritos</h2>
 
-      {/* Si hay mensaje, mostrarlo en una alerta */}
-      {mensaje && (
-        <div className="alert alert-success" role="alert">
-          {mensaje}
-        </div>
-      )}
-
-      {/* Si no hay productos favoritos, aviso al usuario */}
-      {productosFavoritos.length === 0 ? (
-        <p>No tienes productos favoritos.</p>
+      {favoritosFiltrados.length === 0 ? (
+        <p className="text-center text-muted">No hay productos favoritos aún.</p>
       ) : (
-        // Si hay favoritos, los muestro en una grilla de cards
         <div className="row">
-          {productosFavoritos.map(p => (
-            <div className="col-md-4 mb-3" key={`${p.id}-${p.title}`}>
+          {favoritosFiltrados.map((prod) => (
+            <div className="col-md-4 mb-4" key={prod.id}>
               <div className="card h-100">
                 <img
-                  src={p.image}
+                  src={prod.image}
                   className="card-img-top"
-                  alt={p.title}
-                  style={{ height: '200px', objectFit: 'contain' }}
+                  alt={prod.title}
+                  style={{ height: "200px", objectFit: "contain" }}
                 />
-                <div className="card-body">
-                  <h5 className="card-title">{p.title}</h5>
-                  <p className="card-text"><strong>Precio:</strong> ${p.price}</p>
-                  <p className="card-text"><strong>Categoría:</strong> {p.category}</p>
-                  <div className="d-flex justify-content-between mt-3">
-                    <Link to={`/detalle/${p.id}`} className="btn btn-info">Ver más</Link>
-                    <button
-                      className="btn btn-warning"
-                      onClick={() => desmarcarFavorito(p.id)} 
+                <div className="card-body d-flex flex-column">
+                  <h5 className="card-title">{prod.title}</h5>
+                  <p className="card-text text-muted">${prod.price}</p>
+                  <p className="card-text">{prod.category}</p>
+                  <div className="mt-auto d-flex justify-content-between">
+                    <Link to={`/detalle/${prod.id}`} className="btn btn-sm btn-outline-primary">
+                      Ver detalle
+                    </Link>
+                    <button 
+                      className="btn btn-sm btn-outline-danger" 
+                      onClick={() => quitarFavorito(prod.id)}
+                      title="Quitar de favoritos"
                     >
-                      Quitar ⭐
+                      Quitar
                     </button>
                   </div>
                 </div>
@@ -61,11 +84,9 @@ function Favoritos() {
           ))}
         </div>
       )}
-      <div className="mt-4">
-        <Link to="/inicio" className="btn btn-secondary">Volver a Inicio</Link>
-      </div>
     </div>
   );
 }
 
 export default Favoritos;
+

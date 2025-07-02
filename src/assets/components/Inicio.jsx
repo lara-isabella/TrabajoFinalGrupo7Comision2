@@ -1,66 +1,70 @@
 import React, { useEffect, useContext } from 'react';
 import { ProductoContext } from './ProductoContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Inicio() {
-  const { productos, setProductos, favoritos, setFavoritos } = useContext(ProductoContext);
+  const { productos, setProductos, favoritos, setFavoritos, usuarioActivo, autenticado } = useContext(ProductoContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch('https://fakestoreapi.com/products')
       .then(res => res.json())
-      .then(data => {
+      .then(apiData => {
         const productosLocales = JSON.parse(localStorage.getItem('productos')) || [];
-        const productosCombinados = [...data, ...productosLocales];
-        const conBorrado = productosCombinados.map(p => ({ ...p, eliminado: p.eliminado || false }));
+
+        // Evitamos duplicados: solo agregamos locales que NO estén en API
+        const localesFiltrados = productosLocales.filter(local =>
+          !apiData.some(api => String(api.id) === String(local.id))
+        );
+
+        const combinados = [...apiData, ...localesFiltrados];
+        const conBorrado = combinados.map(p => ({ ...p, eliminado: p.eliminado || false }));
+
         setProductos(conBorrado);
       });
-  }, []);
+  }, [setProductos]);
 
   const borrar = (id) => {
+    if (!autenticado || usuarioActivo?.rol !== 'admin') {
+      alert("Solo los administradores pueden borrar productos.");
+      return;
+    }
     setProductos(prev =>
-      prev.map(p => p.id === id ? { ...p, eliminado: true } : p)
+      prev.map(p => String(p.id) === String(id) ? { ...p, eliminado: true } : p)
     );
+
+    // Actualizar localStorage en productos locales
+    const locales = JSON.parse(localStorage.getItem('productos')) || [];
+    const nuevosLocales = locales.map(p =>
+      String(p.id) === String(id) ? { ...p, eliminado: true } : p
+    );
+    localStorage.setItem('productos', JSON.stringify(nuevosLocales));
   };
 
   const toggleFavorito = (id) => {
-    if (favoritos.includes(id)) {
-      setFavoritos(favoritos.filter(f => f !== id));
+    if (!autenticado) {
+      alert('Debes iniciar sesión para marcar productos como favoritos.');
+      return;
+    }
+    const idStr = String(id);
+    if (favoritos.includes(idStr)) {
+      setFavoritos(favoritos.filter(f => f !== idStr));
     } else {
-      setFavoritos([...favoritos, id]);
+      setFavoritos([...favoritos, idStr]);
     }
   };
 
   return (
     <div className="container mt-4">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2>Listado de Productos</h2>
-        <button
-          className="btn btn-outline-danger"
-          onClick={() => {
-            localStorage.removeItem('isAutenticated');
-            localStorage.removeItem('sessionUser');
-            window.location.href = '/';
-          }}
-        >
-          Cerrar sesión
-        </button>
-      </div>
-
-      <div className="mb-3 d-flex justify-content-start gap-2">
-        <Link className="btn btn-success" to="/agregar">Agregar Producto</Link>
-        <Link className="btn btn-warning" to="/favoritos">Ver Favoritos ⭐</Link>
-      </div>
-
+      <h2 className="mb-3">Listado de Productos</h2>
+      {autenticado && usuarioActivo?.rol === 'admin' && (
+        <Link className="btn btn-success mb-3" to="/agregar">Agregar Producto</Link>
+      )}
       <div className="row">
         {productos.filter(p => !p.eliminado).map(p => (
           <div className="col-md-4 mb-3" key={`${p.id}-${p.title}`}>
             <div className="card h-100">
-              <img
-                src={p.image}
-                className="card-img-top"
-                alt={p.title}
-                style={{ height: '200px', objectFit: 'contain' }}
-              />
+              <img src={p.image} className="card-img-top" alt={p.title} style={{ height: '200px', objectFit: 'contain' }} />
               <div className="card-body">
                 <h5 className="card-title">{p.title}</h5>
                 <p className="card-text"><strong>ID:</strong> {p.id}</p>
@@ -74,7 +78,7 @@ function Inicio() {
                   <input
                     className="form-check-input"
                     type="checkbox"
-                    checked={favoritos.includes(p.id)}
+                    checked={favoritos.includes(String(p.id))}
                     onChange={() => toggleFavorito(p.id)}
                     id={`fav-${p.id}`}
                   />
@@ -83,10 +87,14 @@ function Inicio() {
                   </label>
                 </div>
 
-                <div className="d-flex justify-content-between flex-wrap gap-2">
+                <div className="d-flex justify-content-between">
                   <Link to={`/detalle/${p.id}`} className="btn btn-info">Ver más</Link>
-                  <Link to={`/editar/${p.id}`} className="btn btn-secondary">Editar</Link>
-                  <button className="btn btn-danger" onClick={() => borrar(p.id)}>Borrar</button>
+                  {usuarioActivo?.rol === 'admin' && (
+                    <>
+                      <Link to={`/editar/${p.id}`} className="btn btn-warning">Editar</Link>
+                      <button className="btn btn-danger" onClick={() => borrar(p.id)}>Borrar</button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
