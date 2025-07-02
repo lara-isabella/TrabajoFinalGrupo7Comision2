@@ -18,10 +18,18 @@ function Login() {
     if (pass.length < 6) {
       return setError('Contraseña mínima 6 caracteres');
     }
+<<<<<<< HEAD
 setAutenticado(true);
 localStorage.setItem('isAutenticated', true); 
 navigate('/inicio');
 
+=======
+
+setAutenticado(true);
+localStorage.setItem('isAutenticated', true); 
+navigate('/inicio');
+
+>>>>>>> 8a95184e41a335c98b4322c15512e2062a36c07a
   };
 
   return (
