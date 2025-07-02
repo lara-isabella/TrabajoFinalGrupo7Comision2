@@ -14,7 +14,6 @@ function AgregarProducto() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validaciones personalizadas
     if (nombre.trim().length < 3) {
       return setError('El nombre debe tener al menos 3 caracteres.');
     }
@@ -31,9 +30,8 @@ function AgregarProducto() {
       return setError('Debe ser una URL válida para la imagen.');
     }
 
-    // Si pasa las validaciones, creamos un objeto producto
     const nuevoProducto = {
-      id: Date.now(), // Generamos un ID ficticio
+      id: Date.now(), 
       title: nombre,
       price: parseFloat(precio),
       category: categoria,
@@ -42,12 +40,11 @@ function AgregarProducto() {
       eliminado: false
     };
 
-    // Guardamos temporalmente en localStorage (pueden adaptarlo al contexto)
     const productos = JSON.parse(localStorage.getItem('productos')) || [];
     productos.push(nuevoProducto);
     localStorage.setItem('productos', JSON.stringify(productos));
 
-    // Redirigimos al inicio
+
     navigate('/');
   };
 
