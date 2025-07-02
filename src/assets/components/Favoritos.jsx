@@ -75,7 +75,7 @@ function Favoritos() {
                       onClick={() => quitarFavorito(prod.id)}
                       title="Quitar de favoritos"
                     >
-                      ✖ Quitar
+                      Quitar
                     </button>
                   </div>
                 </div>
@@ -89,3 +89,4 @@ function Favoritos() {
 }
 
 export default Favoritos;
+

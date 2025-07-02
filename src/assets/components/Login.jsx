@@ -35,24 +35,11 @@ function Login() {
       setLoading(false);
       return setError('Contraseña mínima 6 caracteres');
     }
-    if (pass1 !== pass2) {
-      setLoading(false);
-      return setError('Las contraseñas no coinciden');
-    }
 
-    const usuarios = JSON.parse(localStorage.getItem('users')) || [];
-    const user = usuarios.find(u => u.email === email && u.password === pass1 && u.nombre === nombre);
+setAutenticado(true);
+localStorage.setItem('isAutenticated', true); 
+navigate('/inicio');
 
-    if (!user) {
-      setLoading(false);
-      return setError('Credenciales inválidas');
-    }
-
-    localStorage.setItem('sessionUser', JSON.stringify(user));
-    setAutenticado(true);
-    setUsuarioActivo(user);
-    setLoading(false);
-    navigate('/inicio');
   };
 
   return (
