@@ -29,6 +29,9 @@ function Navbar() {
             <Link to="/agregar" className="btn btn-outline-warning btn-sm me-2">
                 Agregar producto
             </Link>
+            <Link to="/acercade" className="btn btn-outline-primary btn-sm me-2">
+                Acerca De
+            </Link>
             </>
           
         )}
