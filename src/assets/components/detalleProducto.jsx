@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ProductoContext } from './ProductoContext';
 
 function DetalleProducto() {
-  const { id } = useParams(); // Obtiene el id desde la URL
+  const { id } = useParams();
   const navigate = useNavigate();
   const { productos, favoritos, setFavoritos } = useContext(ProductoContext);
 

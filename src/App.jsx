@@ -1,11 +1,15 @@
 import React, { useContext } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+
 import Login from './assets/components/Login';
+import Registro from './assets/components/Registro';
 import Inicio from './assets/components/Inicio';
-import AcercaDe from './assets/components/acercaDe';
 import AgregarProducto from './assets/components/agregarProducto';
 import DetalleProducto from './assets/components/detalleProducto';
+import EditarProducto from './assets/components/EditarProducto';
 import Favoritos from './assets/components/Favoritos';
+import AcercaDe from './assets/components/acercaDe';
+import PrivateRoute from './assets/components/PrivateRoute';
 import { ProductoContext } from './assets/components/ProductoContext';
 
 function App() {
@@ -13,16 +17,57 @@ function App() {
 
   return (
     <Routes>
+      {/* Rutas públicas */}
       <Route path="/" element={<Login />} />
-      <Route path="/inicio" element={autenticado ? <Inicio /> : <Navigate to="/" />} />
-      <Route path="/agregar" element={autenticado ? <AgregarProducto /> : <Navigate to="/" />} />
+      <Route path="/registro" element={<Registro />} />
       <Route path="/acercade" element={<AcercaDe />} />
-      <Route path="/favoritos" element={autenticado ? <Favoritos /> : <Navigate to="/" />} />
-      <Route path="/detalle/:id" element={autenticado ? <DetalleProducto /> : <Navigate to="/" />} />
+
+      {/* Rutas privadas */}
+      <Route
+        path="/inicio"
+        element={
+          <PrivateRoute>
+            <Inicio />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/agregar"
+        element={
+          <PrivateRoute>
+            <AgregarProducto />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/favoritos"
+        element={
+          <PrivateRoute>
+            <Favoritos />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/detalle/:id"
+        element={
+          <PrivateRoute>
+            <DetalleProducto />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/editar/:id"
+        element={
+          <PrivateRoute>
+            <EditarProducto />
+          </PrivateRoute>
+        }
+      />
+
+      {/* Ruta por defecto */}
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
 }
 
 export default App;
-
