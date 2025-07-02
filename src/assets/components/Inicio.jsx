@@ -6,15 +6,25 @@ function Inicio() {
   const { productos, setProductos, favoritos, setFavoritos } = useContext(ProductoContext);
 
   useEffect(() => {
-    fetch('https://fakestoreapi.com/products')
-      .then(res => res.json())
-      .then(data => {
-        const productosLocales = JSON.parse(localStorage.getItem('productos')) || [];
-        const productosCombinados = [...data, ...productosLocales];
-        const conBorrado = productosCombinados.map(p => ({ ...p, eliminado: p.eliminado || false }));
-        setProductos(conBorrado);
-      });
-  }, []);
+    // Solo hace fetch si no hay productos
+    if (productos.length === 0) {
+      // Intenta cargar productos de localStorage
+      const productosLocales = JSON.parse(localStorage.getItem('productos')) || [];
+      if (productosLocales.length > 0) {
+        setProductos(productosLocales);
+      } else {
+        // Si no hay nada en localStorage, carga de la API
+        fetch('https://fakestoreapi.com/products')
+          .then(res => res.json())
+          .then(data => {
+            // Marca todos como no eliminados
+            const conBorrado = data.map(p => ({ ...p, eliminado: false }));
+            setProductos(conBorrado);
+            localStorage.setItem('productos', JSON.stringify(conBorrado));
+          });
+      }
+    }
+  }, [productos, setProductos]);
 
   const borrar = (id) => {
     setProductos(prev =>
