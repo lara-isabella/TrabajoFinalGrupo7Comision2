@@ -1,20 +1,21 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useMemo, useCallback } from 'react';
 import { ProductoContext } from './ProductoContext';
 import { Link } from 'react-router-dom';
 
 function Favoritos() {
-  // Obtengo del contexto el listado de productos, los favoritos y la función para actualizar favoritos
   const { productos, favoritos, setFavoritos } = useContext(ProductoContext);
   const [mensaje, setMensaje] = useState('');
-  const productosFavoritos = productos.filter(p => favoritos.includes(p.id) && !p.eliminado);
 
-  // Función que se ejecuta al desmarcar un producto como favorito
-  const desmarcarFavorito = (id) => {
-    // Actualizo el estado global quitando el id del producto de la lista de favoritos
+  // Memorizar el filtrado de productos favoritos para no recalcular en cada render
+  const productosFavoritos = useMemo(() => {
+    return productos.filter(p => favoritos.includes(p.id) && !p.eliminado);
+  }, [productos, favoritos]);
+
+  const desmarcarFavorito = useCallback((id) => {
     setFavoritos(favoritos.filter(f => f !== id));
     setMensaje('Producto desmarcado como favorito!');
     setTimeout(() => setMensaje(''), 3000);
-  };
+  }, [favoritos, setFavoritos]);
 
   return (
     <div className="container mt-4">
@@ -27,7 +28,6 @@ function Favoritos() {
         </div>
       )}
 
-      {/* Si no hay productos favoritos, aviso al usuario */}
       {productosFavoritos.length === 0 ? (
         <p>No tienes productos favoritos.</p>
       ) : (
@@ -50,7 +50,7 @@ function Favoritos() {
                     <Link to={`/detalle/${p.id}`} className="btn btn-info">Ver más</Link>
                     <button
                       className="btn btn-warning"
-                      onClick={() => desmarcarFavorito(p.id)} 
+                      onClick={() => desmarcarFavorito(p.id)}
                     >
                       Quitar ⭐
                     </button>
@@ -69,3 +69,4 @@ function Favoritos() {
 }
 
 export default Favoritos;
+

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ProductoContext } from './ProductoContext';
 
@@ -7,7 +7,8 @@ function DetalleProducto() {
   const navigate = useNavigate();
   const { productos, favoritos, setFavoritos } = useContext(ProductoContext);
 
-  // Busca el producto por id
+  const [mensaje, setMensaje] = useState('');
+
   const producto = productos.find(p => p.id == id);
 
   if (!producto) {
@@ -21,16 +22,25 @@ function DetalleProducto() {
     );
   }
 
-  // Función para desmarcar como favorito
   const desmarcarFavorito = () => {
     if (favoritos.includes(producto.id)) {
       setFavoritos(favoritos.filter(f => f !== producto.id));
+      setMensaje('Producto desmarcado como favorito!');
+      setTimeout(() => setMensaje(''), 3000); 
     }
   };
 
   return (
     <div className="container mt-4">
       <h2>Detalle del producto</h2>
+
+      {/* Mostrar mensaje de confirmación si existe */}
+      {mensaje && (
+        <div className="alert alert-success" role="alert">
+          {mensaje}
+        </div>
+      )}
+
       <div className="card mb-3" style={{ maxWidth: '540px' }}>
         <div className="row g-0">
           <div className="col-md-4">
