@@ -6,26 +6,32 @@ export function ProductoProvider({ children }) {
   const [productos, setProductos] = useState([]);
   const [favoritos, setFavoritos] = useState([]);
 
-  useEffect(() => {
-    const fetchProductos = async () => {
-      try {
-        const response = await fetch("https://fakestoreapi.com/products");
-        const data = await response.json();
-        const productosLocales = JSON.parse(localStorage.getItem('productos')) || [];
-        const productosCombinados = [...data, ...productosLocales];
-        const conBorrado = productosCombinados.map(p => ({ ...p, eliminado: p.eliminado || false }));
-        setProductos(conBorrado);
-      } catch (error) {
-        console.error("Error al obtener productos:", error);
-      }
-    };
+  const [autenticado, setAutenticado] = useState(() => {
+    try {
+      const storedAuth = localStorage.getItem('isAutenticated');
+      return storedAuth ? JSON.parse(storedAuth) : false;
+    } catch (error) {
+      console.error("Error al parsear isAutenticated de localStorage", error);
+      return false; 
+    }
+  });
 
-    fetchProductos();
-  }, []);
+  useEffect(() => {
+    localStorage.setItem('isAutenticated', JSON.stringify(autenticado));
+  }, [autenticado]);
 
   return (
-    <ProductoContext.Provider value={{ productos, setProductos, favoritos, setFavoritos }}>
+    <ProductoContext.Provider value={{
+      productos,
+      setProductos,
+      favoritos,
+      setFavoritos,
+      autenticado,
+      setAutenticado
+    }}>
       {children}
     </ProductoContext.Provider>
   );
 }
+
+export default ProductoProvider;
