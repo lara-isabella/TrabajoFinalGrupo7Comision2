@@ -2,14 +2,14 @@ import React, { useContext } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
 import Login from './assets/components/Login';
-import Registro from './assets/components/Registro';
+import Registro from './assets/components/registro';
 import Inicio from './assets/components/Inicio';
 import AgregarProducto from './assets/components/agregarProducto';
 import DetalleProducto from './assets/components/detalleProducto';
 import EditarProducto from './assets/components/EditarProducto';
 import Favoritos from './assets/components/Favoritos';
 import AcercaDe from './assets/components/acercaDe';
-import PrivateRoute from './assets/components/PrivateRoute';
+import PrivateRoute from './assets/components/privateroute';
 import { ProductoContext } from './assets/components/ProductoContext';
 
 function App() {
