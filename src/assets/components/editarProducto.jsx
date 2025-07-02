@@ -1,133 +1,84 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useContext, useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ProductoContext } from './ProductoContext';
 
 function EditarProducto() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { productos, setProductos, usuarioActivo, autenticado } = useContext(ProductoContext);
+  const { productos, setProductos } = useContext(ProductoContext);
+  const producto = productos.find(p => p.id == id);
 
-  const [producto, setProducto] = useState(null);
+  const [nombre, setNombre] = useState('');
+  const [precio, setPrecio] = useState('');
+  const [categoria, setCategoria] = useState('');
+  const [descripcion, setDescripcion] = useState('');
+  const [imagen, setImagen] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (!autenticado || usuarioActivo?.rol !== 'admin') {
-      setError('Acceso denegado: Solo los administradores pueden editar productos.');
-      return;
+    if (producto) {
+      setNombre(producto.title);
+      setPrecio(producto.price);
+      setCategoria(producto.category);
+      setDescripcion(producto.description);
+      setImagen(producto.image);
     }
+  }, [producto]);
 
-    const productoAEditar = productos.find(p => String(p.id) === id);
-    if (!productoAEditar) {
-      setError('Producto no encontrado.');
-      return;
-    }
-
-    setProducto(productoAEditar);
-  }, [id, productos, autenticado, usuarioActivo]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProducto(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleGuardar = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Actualizamos el array productos, reemplazando el producto editado (por ID string)
-    const nuevosProductos = productos.map(p =>
-      String(p.id) === id ? { ...p, ...producto } : p
-    );
-    setProductos(nuevosProductos);
+    if (nombre.trim().length < 3) return setError('El nombre debe tener al menos 3 caracteres.');
+    if (!precio || isNaN(precio) || parseFloat(precio) <= 0) return setError('Ingrese un precio válido.');
+    if (categoria.trim() === '') return setError('La categoría no puede estar vacía.');
+    if (descripcion.trim().length < 10) return setError('La descripción debe tener al menos 10 caracteres.');
+    if (!imagen.startsWith('http')) return setError('Debe ser una URL válida para la imagen.');
 
-    // Guardamos en localStorage solo productos que son locales (que no vienen de API)
-    const locales = JSON.parse(localStorage.getItem('productos')) || [];
-    const nuevosLocales = locales.map(p =>
-      String(p.id) === id ? { ...p, ...producto } : p
-    );
-    localStorage.setItem('productos', JSON.stringify(nuevosLocales));
+    const editado = {
+      ...producto,
+      title: nombre,
+      price: parseFloat(precio),
+      category: categoria,
+      description: descripcion,
+      image: imagen
+    };
 
-    navigate('/');
+    const actualizados = productos.map(p => p.id == id ? editado : p);
+    setProductos(actualizados);
+    localStorage.setItem('productos', JSON.stringify(actualizados.filter(p => p.id > 20)));
+    navigate('/inicio');
   };
 
-  if (error) {
-    return (
-      <div className="container mt-5">
-        <div className="alert alert-danger text-center">{error}</div>
-        <div className="text-center">
-          <button className="btn btn-secondary" onClick={() => navigate('/')}>
-            Volver al inicio
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   if (!producto) {
-    return <div className="text-center mt-5">Cargando producto...</div>;
+    return <div className="container mt-5"><p>Producto no encontrado</p></div>;
   }
 
   return (
     <div className="container mt-4">
-      <h2>Editar Producto</h2>
-      <form onSubmit={handleGuardar} className="w-75 mx-auto">
+      <h2>Editar producto</h2>
+      <form onSubmit={handleSubmit} className="w-75 mx-auto">
         <div className="mb-3">
           <label>Nombre del producto</label>
-          <input
-            type="text"
-            name="title"
-            className="form-control"
-            value={producto.title}
-            onChange={handleChange}
-          />
+          <input type="text" className="form-control" value={nombre} onChange={(e) => setNombre(e.target.value)} />
         </div>
         <div className="mb-3">
           <label>Precio</label>
-          <input
-            type="number"
-            name="price"
-            className="form-control"
-            value={producto.price}
-            onChange={handleChange}
-          />
+          <input type="text" className="form-control" value={precio} onChange={(e) => setPrecio(e.target.value)} />
         </div>
         <div className="mb-3">
           <label>Categoría</label>
-          <input
-            type="text"
-            name="category"
-            className="form-control"
-            value={producto.category}
-            onChange={handleChange}
-          />
+          <input type="text" className="form-control" value={categoria} onChange={(e) => setCategoria(e.target.value)} />
         </div>
         <div className="mb-3">
           <label>Descripción</label>
-          <textarea
-            name="description"
-            className="form-control"
-            rows="3"
-            value={producto.description}
-            onChange={handleChange}
-          />
+          <textarea className="form-control" rows="3" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
         </div>
         <div className="mb-3">
           <label>URL de imagen</label>
-          <input
-            type="text"
-            name="image"
-            className="form-control"
-            value={producto.image}
-            onChange={handleChange}
-          />
+          <input type="text" className="form-control" value={imagen} onChange={(e) => setImagen(e.target.value)} />
         </div>
-        <div className="text-center">
-          <button type="submit" className="btn btn-warning me-3">
-            Guardar cambios
-          </button>
-          <button type="button" className="btn btn-secondary" onClick={() => navigate('/')}>
-            Cancelar
-          </button>
-        </div>
+        {error && <div className="alert alert-danger">{error}</div>}
+        <button type="submit" className="btn btn-success">Guardar cambios</button>
       </form>
     </div>
   );
