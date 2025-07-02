@@ -4,6 +4,8 @@ import Login from './assets/components/Login';
 import Inicio from './assets/components/Inicio';
 import AcercaDe from './assets/components/acercaDe';
 import AgregarProducto from './assets/components/agregarProducto';
+import DetalleProducto from './assets/components/detalleProducto';
+import Favoritos from './assets/components/Favoritos';
 import { ProductoContext } from './assets/components/ProductoContext';
 
 function App() {
@@ -15,11 +17,12 @@ function App() {
       <Route path="/inicio" element={autenticado ? <Inicio /> : <Navigate to="/" />} />
       <Route path="/agregar" element={autenticado ? <AgregarProducto /> : <Navigate to="/" />} />
       <Route path="/acercade" element={<AcercaDe />} />
-      <Route path="/favoritos" element={<div>Favoritos (a completar)</div>} />
-      <Route path="/detalle/:id" element={<div>Detalle producto (a completar)</div>} />
+      <Route path="/favoritos" element={autenticado ? <Favoritos /> : <Navigate to="/" />} />
+      <Route path="/detalle/:id" element={autenticado ? <DetalleProducto /> : <Navigate to="/" />} />
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
 }
 
 export default App;
+
