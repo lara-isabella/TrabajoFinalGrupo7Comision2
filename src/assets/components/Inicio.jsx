@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useMemo, useCallback } from 'react';
 import { ProductoContext } from './ProductoContext';
 import { Link } from 'react-router-dom';
 
@@ -6,18 +6,14 @@ function Inicio() {
   const { productos, setProductos, favoritos, setFavoritos } = useContext(ProductoContext);
 
   useEffect(() => {
-    // Solo hace fetch si no hay productos
     if (productos.length === 0) {
-      // Intenta cargar productos de localStorage
       const productosLocales = JSON.parse(localStorage.getItem('productos')) || [];
       if (productosLocales.length > 0) {
         setProductos(productosLocales);
       } else {
-        // Si no hay nada en localStorage, carga de la API
         fetch('https://fakestoreapi.com/products')
           .then(res => res.json())
           .then(data => {
-            // Marca todos como no eliminados
             const conBorrado = data.map(p => ({ ...p, eliminado: false }));
             setProductos(conBorrado);
             localStorage.setItem('productos', JSON.stringify(conBorrado));
@@ -26,19 +22,23 @@ function Inicio() {
     }
   }, [productos, setProductos]);
 
-  const borrar = (id) => {
+  const productosVisibles = useMemo(() => {
+    return productos.filter(p => !p.eliminado);
+  }, [productos]);
+
+  const borrar = useCallback((id) => {
     setProductos(prev =>
       prev.map(p => p.id === id ? { ...p, eliminado: true } : p)
     );
-  };
+  }, [setProductos]);
 
-  const toggleFavorito = (id) => {
+  const toggleFavorito = useCallback((id) => {
     if (favoritos.includes(id)) {
       setFavoritos(favoritos.filter(f => f !== id));
     } else {
       setFavoritos([...favoritos, id]);
     }
-  };
+  }, [favoritos, setFavoritos]);
 
   return (
     <div className="container mt-4">
@@ -62,7 +62,7 @@ function Inicio() {
       </div>
 
       <div className="row">
-        {productos.filter(p => !p.eliminado).map(p => (
+        {productosVisibles.map(p => (
           <div className="col-md-4 mb-3" key={`${p.id}-${p.title}`}>
             <div className="card h-100">
               <img
