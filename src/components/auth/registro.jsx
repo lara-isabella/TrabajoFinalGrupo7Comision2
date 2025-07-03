@@ -13,7 +13,6 @@ function Registro() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validaciones
     if (!email.includes("@")) {
       setError("Correo electrónico inválido");
       return;
@@ -27,12 +26,9 @@ function Registro() {
       return;
     }
 
-    // Guardar usuario en localStorage
     const newUser = { email, pass };
-
     const users = JSON.parse(localStorage.getItem("users")) || [];
 
-    // Verificar si el usuario ya existe
     const exists = users.some(u => u.email === email);
     if (exists) {
       setError("Este correo ya está registrado");
@@ -103,4 +99,3 @@ function Registro() {
 }
 
 export default Registro;
-

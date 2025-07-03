@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { ProductoContext } from "../../context/ProductoContext";
+import { AuthContext } from "../../context/AuthContext";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -8,37 +8,35 @@ function Login() {
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
-  const { setAutenticado, setUserEmail } = useContext(ProductoContext);
+  const { setUserData } = useContext(AuthContext);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (!email.includes("@")) {
-      setError("Email inválido");
-      return;
+      return setError("Email inválido");
     }
     if (pass.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres");
-      return;
+      return setError("La contraseña debe tener al menos 6 caracteres");
     }
 
-    // Obtener usuarios guardados
     const users = JSON.parse(localStorage.getItem("users")) || [];
-
-    // Buscar usuario por correo y contraseña
-    const userFound = users.find((u) => u.email === email && u.pass === pass);
+    const userFound = users.find(
+      (u) => u.email === email && u.password === pass
+    );
 
     if (!userFound) {
-      setError("Credenciales inválidas");
-      return;
+      return setError("Credenciales inválidas");
     }
 
-    // Si todo está bien, autenticar
     setError("");
-    setAutenticado(true);
-    setUserEmail(userFound.email);
-    localStorage.setItem("sessionUser", JSON.stringify({ email: userFound.email })); 
-    navigate("/"); // Redirige a Home
+    setUserData({
+      email: userFound.email,
+      nombre: userFound.nombre,
+      rol: userFound.rol,
+    });
+
+    navigate("/"); // o "/inicio"
   };
 
   return (
