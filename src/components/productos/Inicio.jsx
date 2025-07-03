@@ -62,8 +62,22 @@ function Inicio() {
 
   return (
     <div className="container py-5">
-      <h2 className="mb-4 text-center text-success fw-bold">Productos disponibles</h2>
-
+      <div className="d-flex justify-content-center mb-4">
+        <h2
+          className="text-center fw-bold"
+          style={{
+            backgroundColor: '#f8bbd0',
+            border: '2px solid #f48fb1',
+            color: '#FFFFFF',
+            borderRadius: '30px',
+            padding: '10px 25px',
+            fontSize: '1.2rem',
+            width: 'fit-content'
+          }}
+        >
+          Productos disponibles
+        </h2>
+      </div>
       <div className="row">
         {productosVisibles.map((p, i) => (
           <div className="col-md-4 mb-4" key={`${p.id}-${i}`}>
