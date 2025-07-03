@@ -81,7 +81,7 @@ function Navbar() {
           )}
 
 
-         <Link to="/acercade" style={estiloBotonCirculo("#b2dfdb", "#4db6ac")}>
+         <Link to="/contacto" style={estiloBotonCirculo("#b2dfdb", "#4db6ac")}>
   Contacto
 </Link>
 
