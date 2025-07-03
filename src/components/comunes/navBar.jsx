@@ -50,8 +50,8 @@ function Navbar() {
             </Link>
           )}
 
-          <Link to="/acercade" className="btn btn-custom btn-acercade">
-            ℹ️ Acerca de
+          <Link to="/contacto" className="btn btn-custom btn-contacto">
+            ℹ️ Contacto
           </Link>
 
           {/* Iniciar sesión y Registrarse si NO está autenticado */}
