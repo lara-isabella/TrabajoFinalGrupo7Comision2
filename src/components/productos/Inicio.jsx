@@ -8,27 +8,26 @@ function Inicio() {
   const { userData, autenticado } = useContext(AuthContext);
 
   useEffect(() => {
-    const productosLocales = JSON.parse(localStorage.getItem("productos")) || [];
+    // Solo hace fetch si no hay productos
+    if (productos.length === 0) {
+      // Intenta cargar productos de localStorage
+      const productosLocales = JSON.parse(localStorage.getItem('productos')) || [];
+      if (productosLocales.length > 0) {
+        setProductos(productosLocales);
+      } else {
+        // Si no hay nada en localStorage, carga de la API
+        fetch('https://fakestoreapi.com/products')
+          .then(res => res.json())
+          .then(data => {
+            // Marca todos como no eliminados
+            const conBorrado = data.map(p => ({ ...p, eliminado: false }));
+            setProductos(conBorrado);
+            localStorage.setItem('productos', JSON.stringify(conBorrado));
+          });
+      }
+    }
+  }, [productos, setProductos]);
 
-    fetch("https://fakestoreapi.com/products")
-      .then((res) => res.json())
-      .then((apiData) => {
-        const tienda = apiData.map((p) => ({ ...p, eliminado: false }));
-
-        const unificados = [...tienda];
-        productosLocales.forEach(local => {
-          const index = unificados.findIndex(p => p.id === local.id);
-          if (index >= 0) {
-            unificados[index] = local;
-          } else {
-            unificados.push(local);
-          }
-        });
-
-        setProductos(unificados);
-        localStorage.setItem("productos", JSON.stringify(unificados));
-      });
-  }, [setProductos]);
 
   const productosVisibles = useMemo(
     () => productos.filter((p) => !p.eliminado),
