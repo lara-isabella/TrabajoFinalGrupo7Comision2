@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ProductoContext } from './ProductoContext';
+import { ProductoContext } from "../../context/ProductoContext";
 
 function Navbar() {
   const { autenticado, setAutenticado, usuarioActivo, setUsuarioActivo } = useContext(ProductoContext);

@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useMemo, useCallback } from 'react';
-import { ProductoContext } from './ProductoContext';
+import { ProductoContext } from '../../context/ProductoContext';
 import { Link } from 'react-router-dom';
 
 function Inicio() {
