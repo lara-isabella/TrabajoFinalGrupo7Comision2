@@ -74,21 +74,22 @@ function Navbar() {
           </Link>
 
           {autenticado && (
-            <Link to="/favoritos" style={estiloBotonCirculo("#ffe082", "#fbc02d")}>
+            <Link to="/favoritos" style={estiloBotonCirculo("#ffe082", "#ffc107")}>
               Favoritos
             </Link>
           )}
 
-          <Link to="/contacto" style={estiloBotonCirculo("#b3e5fc", "#4fc3f7")}>
-            Contacto
-          </Link>
+         <Link to="/acercade" style={estiloBotonCirculo("#b2dfdb", "#4db6ac")}>
+  Contacto
+</Link>
+
 
           {!autenticado && (
             <>
               <Link to="/login" style={estiloBotonCirculo("#fff176", "#fbc02d")}>
                 Iniciar<br />sesión
               </Link>
-              <Link to="/registro" style={estiloBotonCirculo("#d1c4e9", "#9575cd")}>
+              <Link to="/registro" style={estiloBotonCirculo("#fce4ec", "#f8bbd0")}>
                 Registro
               </Link>
             </>
@@ -97,7 +98,7 @@ function Navbar() {
           {autenticado && (
             <button
               onClick={cerrarSesion}
-              style={estiloBotonCirculo("#ffcdd2", "#ef5350")}
+              style={estiloBotonCirculo("#ffcdd2", "#ec407a")}
             >
               Cerrar<br />sesión
             </button>

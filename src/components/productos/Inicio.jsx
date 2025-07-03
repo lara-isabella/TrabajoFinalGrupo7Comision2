@@ -1,40 +1,64 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useMemo, useCallback } from 'react';
 import { ProductoContext } from '../../context/ProductoContext';
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthContext';
+import {
+  obtenerProductosDesdeAPI,
+  obtenerProductosLocales,
+  guardarProductosEnLocalStorage
+} from '../../services/api'; // <-- ACÁ SE USA TU RUTA
+// import { validarEmail, camposVacios } from '../../utils/validaciones'; // si querés usar validaciones
 
 function Inicio() {
   const { productos, setProductos, favoritos, setFavoritos } = useContext(ProductoContext);
+  const { userData, autenticado } = useContext(AuthContext);
 
   useEffect(() => {
-    fetch('https://fakestoreapi.com/products')
-      .then(res => res.json())
-      .then(data => {
-        const productosLocales = JSON.parse(localStorage.getItem('productos')) || [];
-        const productosCombinados = [...data, ...productosLocales];
-        const conBorrado = productosCombinados.map(p => ({ ...p, eliminado: p.eliminado || false }));
-        setProductos(conBorrado);
-      });
-  }, []);
+    async function cargarProductos() {
+      const productosLocales = obtenerProductosLocales();
+      if (productosLocales.length > 0) {
+        setProductos(productosLocales);
+      } else {
+        const productosDesdeAPI = await obtenerProductosDesdeAPI();
+        setProductos(productosDesdeAPI);
+        guardarProductosEnLocalStorage(productosDesdeAPI);
+      }
+    }
 
-  const borrar = (id) => {
-    setProductos(prev =>
-      prev.map(p => p.id === id ? { ...p, eliminado: true } : p)
+    if (productos.length === 0) {
+      cargarProductos();
+    }
+  }, [productos, setProductos]);
+
+  const productosVisibles = useMemo(() => {
+    return productos.filter(p => !p.eliminado);
+  }, [productos]);
+
+  const borrar = useCallback((id) => {
+    const nuevosProductos = productos.map(p =>
+      p.id === id ? { ...p, eliminado: true } : p
     );
-  };
+    setProductos(nuevosProductos);
+    guardarProductosEnLocalStorage(nuevosProductos);
+  }, [productos, setProductos]);
 
-  const toggleFavorito = (id) => {
+  const toggleFavorito = useCallback((id) => {
+    if (!autenticado) {
+      alert('Debes iniciar sesión para marcar favoritos');
+      return;
+    }
     if (favoritos.includes(id)) {
       setFavoritos(favoritos.filter(f => f !== id));
     } else {
       setFavoritos([...favoritos, id]);
     }
-  };
+  }, [autenticado, favoritos, setFavoritos]);
 
-  const estiloBoton = {
-    width: "90px",
-    height: "90px",
+  const estiloBotonSunny = {
+    width: "110px",
+    height: "110px",
     backgroundColor: "#ffeb3b",
-    border: "3px solid #fdd835",
+    border: "4px solid #fdd835",
     borderRadius: "50%",
     fontSize: "0.8rem",
     fontWeight: "bold",
@@ -50,57 +74,76 @@ function Inicio() {
   };
 
   return (
-    <div className="container mt-4">
-      <h2 className="mb-3">Listado de Productos</h2>
+    <div style={{ minHeight: "100vh", paddingTop: "3rem", paddingBottom: "3rem" }}>
+      <div className="container">
 
-      <div className="mb-3 d-flex justify-content-start gap-2">
-        <Link to="/agregar" style={estiloBoton}>
-          Agregar
-        </Link>
-        <Link to="/favoritos" style={{ ...estiloBoton, backgroundColor: "#ffe082", borderColor: "#fbc02d" }}>
-          Favoritos
-        </Link>
-      </div>
+        <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+          <h2 className="text-dark" style={{
+            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+            color: "#2e4c4c"
+          }}>
+            Productos disponibles
+          </h2>
+        </div>
 
-      <div className="row">
-        {productos.filter(p => !p.eliminado).map(p => (
-          <div className="col-md-4 mb-3" key={`${p.id}-${p.title}`}>
-            <div className="card h-100">
-              <img src={p.image} className="card-img-top" alt={p.title} style={{ height: '200px', objectFit: 'contain' }} />
-              <div className="card-body">
-                <h5 className="card-title">{p.title}</h5>
-                <p className="card-text"><strong>ID:</strong> {p.id}</p>
-                <p className="card-text"><strong>Precio:</strong> ${p.price}</p>
-                <p className="card-text"><strong>Categoría:</strong> {p.category}</p>
-                <p className="card-text">
-                  <strong>Descripción:</strong> {p.description ? p.description.slice(0, 60) + '...' : 'Sin descripción'}
-                </p>
+        <div className="mb-4 d-flex gap-4 flex-wrap justify-content-start align-items-center">
+          {userData?.rol === 'admin' && (
+            <Link to="/agregar" style={{ ...estiloBotonSunny, backgroundColor: "#c5e1a5", border: "3px solid #8bc34a" }}>
+              Agregar<br />Producto
+            </Link>
+          )}
+          <Link to="/favoritos" style={{ ...estiloBotonSunny, backgroundColor: "#fff59d", border: "3px solid #fbc02d" }}>
+            Ver<br />Favoritos
+          </Link>
+        </div>
 
-                <div className="form-check mb-2">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    checked={favoritos.includes(p.id)}
-                    onChange={() => toggleFavorito(p.id)}
-                    id={`fav-${p.id}`}
-                  />
-                  <label className="form-check-label" htmlFor={`fav-${p.id}`}>
-                    Favorito ⭐
-                  </label>
-                </div>
+        <div className="row">
+          {productosVisibles.map((p, i) => (
+            <div className="col-md-4 mb-4" key={`${p.id}-${i}`}>
+              <div className="card h-100 shadow-sm">
+                <img
+                  src={p.image}
+                  className="card-img-top"
+                  alt={p.title}
+                  style={{ height: '200px', objectFit: 'contain' }}
+                />
+                <div className="card-body d-flex flex-column justify-content-between">
+                  <h5 className="card-title text-truncate">{p.title}</h5>
+                  <p><strong>Precio:</strong> ${p.price}</p>
+                  <p><strong>Categoría:</strong> {p.category}</p>
+                  <p>
+                    <strong>Descripción:</strong>{" "}
+                    {p.description ? p.description.slice(0, 60) + "..." : "Sin descripción"}
+                  </p>
 
-                <div className="d-flex justify-content-between">
-                  <Link to={`/detalle/${p.id}`} style={{ ...estiloBoton, width: "80px", height: "80px" }}>
-                    Ver<br />más
-                  </Link>
-                  <button onClick={() => borrar(p.id)} style={{ ...estiloBoton, backgroundColor: "#ffcdd2", borderColor: "#ef5350", width: "80px", height: "80px" }}>
-                    Borrar
-                  </button>
+                  <div className="form-check my-2">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      checked={favoritos.includes(p.id)}
+                      onChange={() => toggleFavorito(p.id)}
+                      id={`fav-${p.id}`}
+                    />
+                    <label className="form-check-label" htmlFor={`fav-${p.id}`}>
+                      ⭐ Favorito
+                    </label>
+                  </div>
+
+                  <div className="d-flex justify-content-between flex-wrap gap-2">
+                    <Link to={`/detalle/${p.id}`} className="btn btn-info btn-sm">Ver más</Link>
+                    {userData?.rol === 'admin' && (
+                      <>
+                        <Link to={`/editar/${p.id}`} className="btn btn-secondary btn-sm">Editar</Link>
+                        <button className="btn btn-danger btn-sm" onClick={() => borrar(p.id)}>Borrar</button>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+
       </div>
     </div>
   );
