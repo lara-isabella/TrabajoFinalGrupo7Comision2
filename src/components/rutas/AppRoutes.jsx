@@ -6,7 +6,7 @@ import AgregarProducto from "../productos/agregarProducto";
 import DetalleProducto from "../productos/detalleProducto";
 import EditarProducto from "../productos/EditarProducto";
 import Favoritos from "../productos/Favoritos";
-import AcercaDe from "../paginas/acercaDe";
+import Contacto from "../paginas/Contacto";
 import PrivateRoute from "./privateroute";
 
 function AppRoutes() {
@@ -27,7 +27,7 @@ function AppRoutes() {
       <Route path="/editar/:id" element={<PrivateRoute><EditarProducto /></PrivateRoute>} />
 
       {/* Pública */}
-      <Route path="/acercade" element={<AcercaDe />} />
+      <Route path="/contacto" element={<Contacto />} />
 
       {/* Ruta desconocida */}
       <Route path="*" element={<Navigate to="/" />} />
