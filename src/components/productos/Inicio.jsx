@@ -10,18 +10,19 @@ function Inicio() {
   useEffect(() => {
     const productosLocales = JSON.parse(localStorage.getItem("productos")) || [];
 
+    if (productos.length > 0 && productosLocales.length > 0) {
+      return;
+    }
     fetch("https://fakestoreapi.com/products")
-      .then((res) => res.json())
-      .then((apiData) => {
-        const tienda = apiData.map((p) => ({ ...p, eliminado: false }));
-
-        // Unificar por ID: si el local ya tiene un producto con ese ID, se prioriza
-        const unificados = [...tienda];
+      .then(res => res.json())
+      .then(apiData => {
+        const productosAPI = apiData.map(p => ({ ...p, eliminado: false }));
+        const unificados = [...productosAPI];
 
         productosLocales.forEach(local => {
           const index = unificados.findIndex(p => p.id === local.id);
           if (index >= 0) {
-            unificados[index] = local;
+            unificados[index] = local; 
           } else {
             unificados.push(local);
           }
@@ -29,9 +30,14 @@ function Inicio() {
 
         setProductos(unificados);
         localStorage.setItem("productos", JSON.stringify(unificados));
+      })
+      .catch(err => {
+        console.error("Error al traer productos de la API:", err);
+        if (productosLocales.length > 0) {
+          setProductos(productosLocales);
+        }
       });
-  }, [setProductos]);
-
+  }, [productos, setProductos]);
 
 
   const productosVisibles = useMemo(

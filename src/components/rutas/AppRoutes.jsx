@@ -8,29 +8,64 @@ import EditarProducto from "../productos/EditarProducto";
 import Favoritos from "../productos/Favoritos";
 import Contacto from "../paginas/Contacto";
 import PrivateRoute from "./privateroute";
+import Layout from "../comunes/Layout";
 
 function AppRoutes() {
   return (
     <Routes>
-      {/* Ruta inicial: muestra la pantalla de productos */}
-      <Route path="/" element={<Inicio />} />
+      {/* Ruta raíz con layout aplicado */}
+      <Route path="/" element={<Layout />}>
+        {/* Rutas públicas */}
+        <Route index element={<Inicio />} />
+        <Route path="login" element={<Login />} />
+        <Route path="registro" element={<Registro />} />
+        <Route path="contacto" element={<Contacto />} />
 
-      {/* Login y Registro */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/registro" element={<Registro />} />
+        {/* Rutas privadas */}
+        <Route
+          path="inicio"
+          element={
+            <PrivateRoute>
+              <Inicio />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="agregar"
+          element={
+            <PrivateRoute>
+              <AgregarProducto />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="favoritos"
+          element={
+            <PrivateRoute>
+              <Favoritos />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="detalle/:id"
+          element={
+            <PrivateRoute>
+              <DetalleProducto />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="editar/:id"
+          element={
+            <PrivateRoute>
+              <EditarProducto />
+            </PrivateRoute>
+          }
+        />
 
-      {/* Rutas privadas */}
-      <Route path="/inicio" element={<PrivateRoute><Inicio /></PrivateRoute>} />
-      <Route path="/agregar" element={<PrivateRoute><AgregarProducto /></PrivateRoute>} />
-      <Route path="/favoritos" element={<PrivateRoute><Favoritos /></PrivateRoute>} />
-      <Route path="/detalle/:id" element={<PrivateRoute><DetalleProducto /></PrivateRoute>} />
-      <Route path="/editar/:id" element={<PrivateRoute><EditarProducto /></PrivateRoute>} />
-
-      {/* Pública */}
-      <Route path="/contacto" element={<Contacto />} />
-
-      {/* Ruta desconocida */}
-      <Route path="*" element={<Navigate to="/" />} />
+        {/* Ruta desconocida */}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Route>
     </Routes>
   );
 }
