@@ -12,10 +12,12 @@ import PrivateRoute from "./privateroute";
 function AppRoutes() {
   return (
     <Routes>
-      {/* Rutas públicas */}
+      {/* Ruta inicial: muestra la pantalla de productos */}
       <Route path="/" element={<Inicio />} />
+
+      {/* Login y Registro */}
+      <Route path="/login" element={<Login />} />
       <Route path="/registro" element={<Registro />} />
-      <Route path="/acercade" element={<AcercaDe />} />
 
       {/* Rutas privadas */}
       <Route path="/inicio" element={<PrivateRoute><Inicio /></PrivateRoute>} />
@@ -24,7 +26,10 @@ function AppRoutes() {
       <Route path="/detalle/:id" element={<PrivateRoute><DetalleProducto /></PrivateRoute>} />
       <Route path="/editar/:id" element={<PrivateRoute><EditarProducto /></PrivateRoute>} />
 
-      {/* Ruta por defecto */}
+      {/* Pública */}
+      <Route path="/acercade" element={<AcercaDe />} />
+
+      {/* Ruta desconocida */}
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );

@@ -1,47 +1,60 @@
-import { useContext } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { ProductoContext } from "../../context/ProductoContext";
 
 function Navbar() {
-  const { autenticado, setAutenticado, usuarioActivo, setUsuarioActivo } = useContext(ProductoContext);
+  const { autenticado, setAutenticado } = useContext(ProductoContext);
   const navigate = useNavigate();
 
   const cerrarSesion = () => {
-    localStorage.removeItem('sessionUser');
     setAutenticado(false);
-    setUsuarioActivo(null);
-    navigate('/');
+    localStorage.removeItem("isAutenticated");
+    navigate("/");
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light px-4">
-      <Link className="navbar-brand" to="/inicio">
-        🛒 ProductosApp
-      </Link>
+    <nav className="navbar bg-dark px-4">
+      <div className="container-fluid d-flex justify-content-between align-items-center">
 
-      <div className="ms-auto d-flex align-items-center">
-        <Link to="/acercade" className="btn btn-outline-info btn-sm me-2">
-          Acerca de
-        </Link>
+        {/* Marca de la página */}
+        <span className="navbar-brand text-light fs-4 mb-0">
+          ☀️🐰 Sunny Bunny
+        </span>
 
-        {autenticado && (
-          <Link to="/favoritos" className="btn btn-outline-primary btn-sm me-2">
-            Mis favoritos
+        {/* Botones */}
+        <div className="d-flex gap-2">
+
+          {/* Inicio visible siempre */}
+          <Link to="/" className="btn btn-outline-light">
+            🏠 Inicio
           </Link>
-        )}
 
-        {autenticado && usuarioActivo ? (
-          <>
-            <span className="me-3">Hola, <strong>{usuarioActivo.nombre}</strong> 👋</span>
-            <button className="btn btn-outline-danger btn-sm" onClick={cerrarSesion}>
-              Cerrar sesión
+          {/* Favoritos solo si está autenticado */}
+          {autenticado && (
+            <Link to="/favoritos" className="btn btn-warning">
+              ⭐ Favoritos
+            </Link>
+          )}
+
+          {/* Acerca de siempre visible */}
+          <Link to="/acercade" className="btn btn-outline-light">
+            ℹ️ Acerca de
+          </Link>
+
+          {/* Iniciar sesión si NO está autenticado */}
+          {!autenticado && (
+            <Link to="/login" className="btn btn-success">
+              🔓 Iniciar sesión
+            </Link>
+          )}
+
+          {/* Cerrar sesión si está autenticado */}
+          {autenticado && (
+            <button onClick={cerrarSesion} className="btn btn-danger">
+              🔒 Cerrar sesión
             </button>
-          </>
-        ) : (
-          <Link to="/" className="btn btn-outline-success btn-sm">
-            Iniciar sesión
-          </Link>
-        )}
+          )}
+        </div>
       </div>
     </nav>
   );
