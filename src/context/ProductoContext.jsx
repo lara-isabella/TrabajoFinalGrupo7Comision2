@@ -6,18 +6,34 @@ export function ProductoProvider({ children }) {
   const [productos, setProductos] = useState([]);
   const [favoritos, setFavoritos] = useState([]);
 
+  //leer sessionUser al iniciar para rehidratar
+  const [userEmail, setUserEmail] = useState(() => {
+    try {
+      const storedSession = localStorage.getItem("sessionUser");
+      return storedSession ? JSON.parse(storedSession).email : "";
+    } catch {
+      return "";
+    }
+  });
+
+  //Determinar si está autenticado en base a sessionUser
   const [autenticado, setAutenticado] = useState(() => {
     try {
-      const storedAuth = localStorage.getItem("isAutenticated");
-      return storedAuth ? JSON.parse(storedAuth) : false;
+      const storedSession = localStorage.getItem("sessionUser");
+      return storedSession ? true : false;
     } catch {
       return false;
     }
   });
 
+  //si userEmail cambia, actualizar sessionUser en localStorage
   useEffect(() => {
-    localStorage.setItem("isAutenticated", JSON.stringify(autenticado));
-  }, [autenticado]);
+    if (autenticado && userEmail) {
+      localStorage.setItem("sessionUser", JSON.stringify({ email: userEmail }));
+    } else {
+      localStorage.removeItem("sessionUser");
+    }
+  }, [autenticado, userEmail]);
 
   return (
     <ProductoContext.Provider
@@ -28,6 +44,8 @@ export function ProductoProvider({ children }) {
         setFavoritos,
         autenticado,
         setAutenticado,
+        userEmail,
+        setUserEmail,
       }}
     >
       {children}

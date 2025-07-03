@@ -8,11 +8,10 @@ function Login() {
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
-  const { setAutenticado } = useContext(ProductoContext);
+  const { setAutenticado, setUserEmail } = useContext(ProductoContext);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("✅ Formulario enviado");
 
     // Validación básica
     if (!email.includes("@")) {
@@ -24,12 +23,23 @@ function Login() {
       return;
     }
 
-    // Guardar usuario (opcional)
-    sessionStorage.setItem("userEmail", email);
+    // Obtener usuarios guardados
+    const users = JSON.parse(localStorage.getItem("users")) || [];
 
-    // Autenticar y redirigir
+    // Buscar usuario por correo y contraseña
+    const userFound = users.find((u) => u.email === email && u.pass === pass);
+
+    if (!userFound) {
+      setError("Credenciales inválidas");
+      return;
+    }
+
+    // Si todo está bien, autenticar
+    setError("");
     setAutenticado(true);
-    navigate("/inicio");
+    setUserEmail(userFound.email);
+    localStorage.setItem("sessionUser", JSON.stringify({ email: userFound.email })); // Guarda sesión
+    navigate("/"); // Redirige a Home
   };
 
   return (
