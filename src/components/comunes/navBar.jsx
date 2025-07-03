@@ -1,8 +1,9 @@
 import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { ProductoContext } from "../../context/ProductoContext";
 import logo from "../../images/logo.PNG";
 import fondoNavbar from "../../images/fondo-navbar.jpg";
-import { AuthContext } from "../../context/AuthContext";
+import { AuthContext } from '../../context/AuthContext';
 
 function Navbar() {
   const { autenticado, setAutenticado, userEmail } = useContext(AuthContext);
@@ -79,9 +80,11 @@ function Navbar() {
             </Link>
           )}
 
+
          <Link to="/acercade" style={estiloBotonCirculo("#b2dfdb", "#4db6ac")}>
   Contacto
 </Link>
+
 
 
           {!autenticado && (

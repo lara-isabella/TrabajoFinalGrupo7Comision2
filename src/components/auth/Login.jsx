@@ -13,6 +13,8 @@ function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    console.log("Contenido actual del localStorage (users):", localStorage.getItem("users"));
+
     if (!email.includes("@")) {
       return setError("Email inválido");
     }
@@ -22,21 +24,22 @@ function Login() {
 
     const users = JSON.parse(localStorage.getItem("users")) || [];
     const userFound = users.find(
-      (u) => u.email === email && u.password === pass
+      (u) => u.email === email && u.pass === pass
     );
 
     if (!userFound) {
       return setError("Credenciales inválidas");
     }
 
-    setError("");
     setUserData({
       email: userFound.email,
       nombre: userFound.nombre,
       rol: userFound.rol,
     });
 
-    navigate("/"); // o "/inicio"
+    setError("");
+
+    navigate("/");
   };
 
   return (

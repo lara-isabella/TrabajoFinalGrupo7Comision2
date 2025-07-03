@@ -2,12 +2,6 @@ import React, { useEffect, useContext, useMemo, useCallback } from 'react';
 import { ProductoContext } from '../../context/ProductoContext';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
-import {
-  obtenerProductosDesdeAPI,
-  obtenerProductosLocales,
-  guardarProductosEnLocalStorage
-} from '../../services/api'; // <-- ACÁ SE USA TU RUTA
-// import { validarEmail, camposVacios } from '../../utils/validaciones'; // si querés usar validaciones
 
 function Inicio() {
   const { productos, setProductos, favoritos, setFavoritos } = useContext(ProductoContext);
@@ -73,6 +67,7 @@ function Inicio() {
     textAlign: "center"
   };
 
+
   return (
     <div style={{ minHeight: "100vh", paddingTop: "3rem", paddingBottom: "3rem" }}>
       <div className="container">
@@ -128,6 +123,7 @@ function Inicio() {
                       ⭐ Favorito
                     </label>
                   </div>
+
 
                   <div className="d-flex justify-content-between flex-wrap gap-2">
                     <Link to={`/detalle/${p.id}`} className="btn btn-info btn-sm">Ver más</Link>
