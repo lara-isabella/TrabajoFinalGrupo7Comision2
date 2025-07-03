@@ -1,4 +1,3 @@
-// src/context/ProductoContext.jsx
 import { createContext, useState } from "react";
 
 export const ProductoContext = createContext();

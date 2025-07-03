@@ -1,9 +1,11 @@
 import React, { useEffect, useContext, useMemo, useCallback } from 'react';
 import { ProductoContext } from '../../context/ProductoContext';
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthContext';
 
 function Inicio() {
   const { productos, setProductos, favoritos, setFavoritos } = useContext(ProductoContext);
+  const { userData, autenticado } = useContext(AuthContext);
 
   useEffect(() => {
     if (productos.length === 0) {
@@ -33,12 +35,16 @@ function Inicio() {
   }, [setProductos]);
 
   const toggleFavorito = useCallback((id) => {
+    if (!autenticado) {
+      alert('Debes iniciar sesión para marcar favoritos');
+      return;
+    }
     if (favoritos.includes(id)) {
       setFavoritos(favoritos.filter(f => f !== id));
     } else {
       setFavoritos([...favoritos, id]);
     }
-  }, [favoritos, setFavoritos]);
+  }, [autenticado, favoritos, setFavoritos]);
 
   return (
     <div className="container mt-4">
@@ -57,7 +63,11 @@ function Inicio() {
       </div>
 
       <div className="mb-3 d-flex justify-content-start gap-2">
-        <Link className="btn btn-success" to="/agregar">Agregar Producto</Link>
+        {userData?.rol === 'admin' && (
+          <>
+            <Link className="btn btn-success" to="/agregar">Agregar Producto</Link>
+          </>
+        )}
         <Link className="btn btn-warning" to="/favoritos">Ver Favoritos ⭐</Link>
       </div>
 
@@ -95,8 +105,12 @@ function Inicio() {
 
                 <div className="d-flex justify-content-between flex-wrap gap-2">
                   <Link to={`/detalle/${p.id}`} className="btn btn-info">Ver más</Link>
-                  <Link to={`/editar/${p.id}`} className="btn btn-secondary">Editar</Link>
-                  <button className="btn btn-danger" onClick={() => borrar(p.id)}>Borrar</button>
+                  {userData?.rol === 'admin' && (
+                    <>
+                      <Link to={`/editar/${p.id}`} className="btn btn-secondary">Editar</Link>
+                      <button className="btn btn-danger" onClick={() => borrar(p.id)}>Borrar</button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
