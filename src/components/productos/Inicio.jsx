@@ -1,4 +1,3 @@
-// src/components/productos/Inicio.jsx
 import React, { useEffect, useContext, useMemo, useCallback } from 'react';
 import { ProductoContext } from '../../context/ProductoContext';
 import { AuthContext } from '../../context/AuthContext';
@@ -9,30 +8,27 @@ function Inicio() {
   const { userData, autenticado } = useContext(AuthContext);
 
   useEffect(() => {
-  const productosLocales = JSON.parse(localStorage.getItem("productos")) || [];
+    const productosLocales = JSON.parse(localStorage.getItem("productos")) || [];
 
-  fetch("https://fakestoreapi.com/products")
-    .then((res) => res.json())
-    .then((apiData) => {
-      const tienda = apiData.map((p) => ({ ...p, eliminado: false }));
+    fetch("https://fakestoreapi.com/products")
+      .then((res) => res.json())
+      .then((apiData) => {
+        const tienda = apiData.map((p) => ({ ...p, eliminado: false }));
 
-      // Unificar por ID: si el local ya tiene un producto con ese ID, se prioriza
-      const unificados = [...tienda];
+        const unificados = [...tienda];
+        productosLocales.forEach(local => {
+          const index = unificados.findIndex(p => p.id === local.id);
+          if (index >= 0) {
+            unificados[index] = local;
+          } else {
+            unificados.push(local);
+          }
+        });
 
-      productosLocales.forEach(local => {
-        const index = unificados.findIndex(p => p.id === local.id);
-        if (index >= 0) {
-          unificados[index] = local;
-        } else {
-          unificados.push(local);
-        }
+        setProductos(unificados);
+        localStorage.setItem("productos", JSON.stringify(unificados));
       });
-
-      setProductos(unificados);
-      localStorage.setItem("productos", JSON.stringify(unificados));
-    });
-}, [setProductos]);
-
+  }, [setProductos]);
 
   const productosVisibles = useMemo(
     () => productos.filter((p) => !p.eliminado),
@@ -65,39 +61,9 @@ function Inicio() {
     [autenticado, favoritos, setFavoritos]
   );
 
-  const estiloBotonSunny = {
-    width: "110px",
-    height: "110px",
-    backgroundColor: "#ffeb3b",
-    border: "4px solid #fdd835",
-    borderRadius: "50%",
-    fontSize: "0.8rem",
-    fontWeight: "bold",
-    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-    color: "#000",
-    boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
-    textDecoration: "none",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    textAlign: "center"
-  };
-
   return (
     <div className="container py-5">
       <h2 className="mb-4 text-center text-success fw-bold">Productos disponibles</h2>
-
-      <div className="mb-4 d-flex flex-wrap gap-3 justify-content-start">
-        {userData?.rol === "admin" && (
-          <Link to="/agregar" style={{ ...estiloBotonSunny, backgroundColor: "#c5e1a5", border: "3px solid #8bc34a" }}>
-            Agregar<br />Producto
-          </Link>
-        )}
-        <Link to="/favoritos" style={{ ...estiloBotonSunny, backgroundColor: "#fff59d", border: "3px solid #fbc02d" }}>
-          Ver<br />Favoritos
-        </Link>
-      </div>
 
       <div className="row">
         {productosVisibles.map((p, i) => (

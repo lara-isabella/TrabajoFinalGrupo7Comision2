@@ -14,24 +14,14 @@ function AgregarProducto() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (nombre.trim().length < 3) {
-      return setError('El nombre debe tener al menos 3 caracteres.');
-    }
-    if (!precio || isNaN(precio) || parseFloat(precio) <= 0) {
-      return setError('Ingrese un precio válido.');
-    }
-    if (categoria.trim() === '') {
-      return setError('La categoría no puede estar vacía.');
-    }
-    if (descripcion.trim().length < 10) {
-      return setError('La descripción debe tener al menos 10 caracteres.');
-    }
-    if (!imagen.startsWith('http')) {
-      return setError('Debe ser una URL válida para la imagen.');
-    }
+    if (nombre.trim().length < 3) return setError('El nombre debe tener al menos 3 caracteres.');
+    if (!precio || isNaN(precio) || parseFloat(precio) <= 0) return setError('Ingrese un precio válido.');
+    if (categoria.trim() === '') return setError('La categoría no puede estar vacía.');
+    if (descripcion.trim().length < 10) return setError('La descripción debe tener al menos 10 caracteres.');
+    if (!imagen.startsWith('http')) return setError('Debe ser una URL válida para la imagen.');
 
     const nuevoProducto = {
-      id: Date.now(), 
+      id: Date.now(),
       title: nombre,
       price: parseFloat(precio),
       category: categoria,
@@ -44,7 +34,6 @@ function AgregarProducto() {
     productos.push(nuevoProducto);
     localStorage.setItem('productos', JSON.stringify(productos));
 
-
     navigate('/');
   };
 
@@ -54,28 +43,29 @@ function AgregarProducto() {
       <form onSubmit={handleSubmit} className="w-75 mx-auto">
         <div className="mb-3">
           <label>Nombre del producto</label>
-          <input type="text" className="form-control" value={nombre}
-            onChange={(e) => setNombre(e.target.value)} />
+          <input type="text" className="form-control" value={nombre} onChange={(e) => setNombre(e.target.value)} />
         </div>
         <div className="mb-3">
           <label>Precio</label>
-          <input type="text" className="form-control" value={precio}
-            onChange={(e) => setPrecio(e.target.value)} />
+          <input type="text" className="form-control" value={precio} onChange={(e) => setPrecio(e.target.value)} />
         </div>
         <div className="mb-3">
           <label>Categoría</label>
-          <input type="text" className="form-control" value={categoria}
-            onChange={(e) => setCategoria(e.target.value)} />
+          <select className="form-select" value={categoria} onChange={(e) => setCategoria(e.target.value)}>
+            <option value="">Seleccione una categoría</option>
+            <option value="men's clothing">Men's clothing</option>
+            <option value="women's clothing">Women's clothing</option>
+            <option value="jewelry">Jewelry</option>
+            <option value="electronics">Electronics</option>
+          </select>
         </div>
         <div className="mb-3">
           <label>Descripción</label>
-          <textarea className="form-control" rows="3" value={descripcion}
-            onChange={(e) => setDescripcion(e.target.value)} />
+          <textarea className="form-control" rows="3" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
         </div>
         <div className="mb-3">
           <label>URL de imagen</label>
-          <input type="text" className="form-control" value={imagen}
-            onChange={(e) => setImagen(e.target.value)} />
+          <input type="text" className="form-control" value={imagen} onChange={(e) => setImagen(e.target.value)} />
         </div>
         {error && <div className="alert alert-danger">{error}</div>}
         <div className="d-flex justify-content-center mt-4">
