@@ -16,10 +16,6 @@ export function AuthProvider({ children }) {
   const autenticado = !!userData;
 
   useEffect(() => {
-    inicializarUsuarios(); // Cargar usuarios iniciales
-  }, []);
-
-  useEffect(() => {
     if (userData) {
       localStorage.setItem("sessionUser", JSON.stringify(userData));
     } else {

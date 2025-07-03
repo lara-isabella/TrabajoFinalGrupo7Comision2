@@ -1,9 +1,9 @@
 import { useContext } from "react";
 import { Navigate } from "react-router-dom";
-import { ProductoContext } from "../../context/ProductoContext";
+import { AuthContext } from "../../context/AuthContext";
 
 function PrivateRoute({ children }) {
-  const { autenticado } = useContext(ProductoContext);
+  const { autenticado } = useContext(AuthContext);
 
   return autenticado ? children : <Navigate to="/" />;
 }

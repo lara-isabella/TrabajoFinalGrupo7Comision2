@@ -2,9 +2,10 @@ import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ProductoContext } from "../../context/ProductoContext";
 import logo from "../../../src/images/logo.PNG";
+import { AuthContext } from '../../context/AuthContext';
 
 function Navbar() {
-  const { autenticado, setAutenticado, userEmail } = useContext(ProductoContext);
+  const { autenticado, setAutenticado, userEmail } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const cerrarSesion = () => {
