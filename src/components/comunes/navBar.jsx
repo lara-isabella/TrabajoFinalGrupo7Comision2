@@ -57,7 +57,7 @@ function Navbar() {
           {/* Iniciar sesión y Registrarse si NO está autenticado */}
           {!autenticado && (
             <>
-              <Link to="/login" className="btn btn-custom btn-login">
+              <Link to="/Login" className="btn btn-custom btn-login">
                 🔓 Iniciar sesión
               </Link>
               <Link to="/registro" className="btn btn-custom btn-registrarse">
