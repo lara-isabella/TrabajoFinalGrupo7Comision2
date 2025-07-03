@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ProductoContext } from './ProductoContext';
+import { ProductoContext } from '../../context/ProductoContext';
 
 function EditarProducto() {
   const { id } = useParams();
