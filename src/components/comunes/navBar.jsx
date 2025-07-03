@@ -3,13 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { ProductoContext } from "../../context/ProductoContext";
 
 function Navbar() {
-  const { autenticado, setAutenticado, userEmail } = useContext(ProductoContext); // Agregado userEmail
+  const { autenticado, setAutenticado, userEmail } = useContext(ProductoContext);
   const navigate = useNavigate();
 
   const cerrarSesion = () => {
     setAutenticado(false);
     localStorage.removeItem("isAutenticated");
-    localStorage.removeItem("sessionUser"); //Elimina sessionUser también al cerrar sesión
+    localStorage.removeItem("sessionUser"); 
     navigate("/");
   };
 
@@ -25,7 +25,7 @@ function Navbar() {
         {/* Botones y mensaje de bienvenida */}
         <div className="d-flex gap-2 align-items-center">
 
-          {/* ✅ Mensaje de bienvenida */}
+          {/*Mensaje de bienvenida */}
           {autenticado && (
             <span className="text-light">¡Bienvenido/a, {userEmail}!</span>
           )}

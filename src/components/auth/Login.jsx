@@ -13,7 +13,6 @@ function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validación básica
     if (!email.includes("@")) {
       setError("Email inválido");
       return;
@@ -38,7 +37,7 @@ function Login() {
     setError("");
     setAutenticado(true);
     setUserEmail(userFound.email);
-    localStorage.setItem("sessionUser", JSON.stringify({ email: userFound.email })); // Guarda sesión
+    localStorage.setItem("sessionUser", JSON.stringify({ email: userFound.email })); 
     navigate("/"); // Redirige a Home
   };
 

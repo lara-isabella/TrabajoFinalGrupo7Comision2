@@ -6,7 +6,6 @@ export function ProductoProvider({ children }) {
   const [productos, setProductos] = useState([]);
   const [favoritos, setFavoritos] = useState([]);
 
-  //leer sessionUser al iniciar para rehidratar
   const [userEmail, setUserEmail] = useState(() => {
     try {
       const storedSession = localStorage.getItem("sessionUser");
