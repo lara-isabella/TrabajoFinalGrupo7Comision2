@@ -7,12 +7,8 @@ function EditarProducto() {
   const navigate = useNavigate();
   const { productos, setProductos } = useContext(ProductoContext);
 
-  // Memoizamos la búsqueda del producto para evitar recalcular en cada render
-  const producto = useMemo(() => {
-    return productos.find(p => p.id == id);
-  }, [productos, id]);
+  const producto = useMemo(() => productos.find(p => p.id == id), [productos, id]);
 
-  // Estados locales para el formulario
   const [nombre, setNombre] = useState('');
   const [precio, setPrecio] = useState('');
   const [categoria, setCategoria] = useState('');
@@ -20,7 +16,6 @@ function EditarProducto() {
   const [imagen, setImagen] = useState('');
   const [error, setError] = useState('');
 
-  // Inicializamos los estados al cargar el producto
   useEffect(() => {
     if (producto) {
       setNombre(producto.title);
@@ -31,14 +26,12 @@ function EditarProducto() {
     }
   }, [producto]);
 
-  // Handlers con useCallback para evitar recrearlos en cada render
   const handleNombreChange = useCallback(e => setNombre(e.target.value), []);
   const handlePrecioChange = useCallback(e => setPrecio(e.target.value), []);
   const handleCategoriaChange = useCallback(e => setCategoria(e.target.value), []);
   const handleDescripcionChange = useCallback(e => setDescripcion(e.target.value), []);
   const handleImagenChange = useCallback(e => setImagen(e.target.value), []);
 
-  // handleSubmit con useCallback y dependencias necesarias
   const handleSubmit = useCallback((e) => {
     e.preventDefault();
 
@@ -81,7 +74,13 @@ function EditarProducto() {
         </div>
         <div className="mb-3">
           <label>Categoría</label>
-          <input type="text" className="form-control" value={categoria} onChange={handleCategoriaChange} />
+          <select className="form-select" value={categoria} onChange={handleCategoriaChange}>
+            <option value="">Seleccione una categoría</option>
+            <option value="men's clothing">Men's clothing</option>
+            <option value="women's clothing">Women's clothing</option>
+            <option value="jewelry">Jewelry</option>
+            <option value="electronics">Electronics</option>
+          </select>
         </div>
         <div className="mb-3">
           <label>Descripción</label>
@@ -99,4 +98,3 @@ function EditarProducto() {
 }
 
 export default EditarProducto;
-
