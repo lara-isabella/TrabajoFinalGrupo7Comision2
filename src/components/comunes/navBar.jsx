@@ -42,11 +42,17 @@ function Navbar() {
           </Link>
 
           {/* Iniciar sesión si NO está autenticado */}
-          {!autenticado && (
-            <Link to="/login" className="btn btn-success">
-              🔓 Iniciar sesión
-            </Link>
-          )}
+         {!autenticado && (
+         <>
+         <Link to="/login" className="btn btn-success">
+         🔓 Iniciar sesión
+         </Link>
+         <Link to="/registro" className="btn btn-primary">
+         📝 Registrarse
+         </Link>
+  </>
+)}
+
 
           {/* Cerrar sesión si está autenticado */}
           {autenticado && (
