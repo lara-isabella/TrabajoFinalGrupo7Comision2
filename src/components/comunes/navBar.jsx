@@ -3,12 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { ProductoContext } from "../../context/ProductoContext";
 
 function Navbar() {
-  const { autenticado, setAutenticado } = useContext(ProductoContext);
+  const { autenticado, setAutenticado, userEmail } = useContext(ProductoContext);
   const navigate = useNavigate();
 
   const cerrarSesion = () => {
     setAutenticado(false);
     localStorage.removeItem("isAutenticated");
+    localStorage.removeItem("sessionUser"); 
     navigate("/");
   };
 
@@ -21,8 +22,13 @@ function Navbar() {
           ☀️🐰 Sunny Bunny
         </span>
 
-        {/* Botones */}
-        <div className="d-flex gap-2">
+        {/* Botones y mensaje de bienvenida */}
+        <div className="d-flex gap-2 align-items-center">
+
+          {/*Mensaje de bienvenida */}
+          {autenticado && (
+            <span className="text-light">¡Bienvenido/a, {userEmail}!</span>
+          )}
 
           {/* Inicio visible siempre */}
           <Link to="/" className="btn btn-outline-light">
@@ -41,11 +47,16 @@ function Navbar() {
             ℹ️ Acerca de
           </Link>
 
-          {/* Iniciar sesión si NO está autenticado */}
+          {/* Iniciar sesión y Registrarse si NO está autenticado */}
           {!autenticado && (
-            <Link to="/login" className="btn btn-success">
-              🔓 Iniciar sesión
-            </Link>
+            <>
+              <Link to="/login" className="btn btn-success">
+                🔓 Iniciar sesión
+              </Link>
+              <Link to="/registro" className="btn btn-primary">
+                📝 Registrarse
+              </Link>
+            </>
           )}
 
           {/* Cerrar sesión si está autenticado */}
