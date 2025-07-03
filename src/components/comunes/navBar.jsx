@@ -1,10 +1,11 @@
 import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ProductoContext } from "../../context/ProductoContext";
-import logo from "../../../src/images/logo.PNG";
+import logo from "../../images/logo.PNG";
+import fondoNavbar from "../../images/fondo-navbar.jpg";
+import { AuthContext } from "../../context/AuthContext";
 
 function Navbar() {
-  const { autenticado, setAutenticado, userEmail } = useContext(ProductoContext);
+  const { autenticado, setAutenticado, userEmail } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const cerrarSesion = () => {
@@ -14,65 +15,93 @@ function Navbar() {
     navigate("/");
   };
 
-  return (
-    <nav className="navbar navbar-expand-lg navbar-custom">
-      <div className="container-fluid d-flex justify-content-between align-items-center">
+  const estiloBotonCirculo = (
+    bgColor = "#ffeb3b",
+    borderColor = "#fdd835",
+    color = "#000"
+  ) => ({
+    width: "90px",
+    height: "90px",
+    backgroundColor: bgColor,
+    border: `3px solid ${borderColor}`,
+    borderRadius: "50%",
+    fontSize: "0.8rem",
+    fontWeight: "bold",
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+    color: color,
+    boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+    textDecoration: "none",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center"
+  });
 
-        {/* Marca de la página */}
-        <Link to="/" className="navbar-brand navbar-brand-custom">
+  return (
+    <nav
+      className="navbar navbar-expand-lg shadow-sm px-4 py-2"
+      style={{
+        backgroundImage: `url(${fondoNavbar})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center"
+      }}
+    >
+      <div className="container-fluid d-flex justify-content-between align-items-center flex-wrap">
+
+        <Link to="/" className="navbar-brand d-flex align-items-center">
           <img
             src={logo}
             alt="Sunny Bunny"
-            className="logo me-2"
+            style={{ height: "70px", objectFit: "contain" }}
           />
-          Sunny Bunny
         </Link>
 
-        {/* Botones y mensaje de bienvenida */}
-        <div className="d-flex gap-2 align-items-center">
+        <div className="d-flex gap-3 align-items-center flex-wrap justify-content-center">
 
-          {/*Mensaje de bienvenida */}
           {autenticado && (
-            <span className="bienvenida">
+            <span style={{
+              fontSize: "0.9 rem",
+              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+              color: "#2e4c4c"
+            }}>
               ¡Bienvenido/a, {userEmail}!
             </span>
           )}
 
-          {/* Inicio visible siempre */}
-          <Link to="/" className="btn btn-custom btn-inicio">
-            🏠 Inicio
+          <Link to="/" style={estiloBotonCirculo()}>
+            Inicio
           </Link>
 
-          {/* Favoritos solo si está autenticado */}
           {autenticado && (
-            <Link to="/favoritos" className="btn btn-custom btn-favoritos">
-              ⭐ Favoritos
+            <Link to="/favoritos" style={estiloBotonCirculo("#ffe082", "#fbc02d")}>
+              Favoritos
             </Link>
           )}
 
-          <Link to="/acercade" className="btn btn-custom btn-acercade">
-            ℹ️ Acerca de
+          <Link to="/contacto" style={estiloBotonCirculo("#b3e5fc", "#4fc3f7")}>
+            Contacto
           </Link>
 
-          {/* Iniciar sesión y Registrarse si NO está autenticado */}
           {!autenticado && (
             <>
-              <Link to="/Login" className="btn btn-custom btn-login">
-                🔓 Iniciar sesión
+              <Link to="/login" style={estiloBotonCirculo("#fff176", "#fbc02d")}>
+                Iniciar<br />sesión
               </Link>
-              <Link to="/registro" className="btn btn-custom btn-registrarse">
-                📝 Registrarse
+              <Link to="/registro" style={estiloBotonCirculo("#d1c4e9", "#9575cd")}>
+                Registro
               </Link>
             </>
           )}
 
-          {/* Cerrar sesión si está autenticado */}
           {autenticado && (
-            <button onClick={cerrarSesion} className="btn btn-custom btn-cerrar">
-              🔒 Cerrar sesión
+            <button
+              onClick={cerrarSesion}
+              style={estiloBotonCirculo("#ffcdd2", "#ef5350")}
+            >
+              Cerrar<br />sesión
             </button>
           )}
-
         </div>
       </div>
     </nav>

@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useMemo, useCallback } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { ProductoContext } from '../../context/ProductoContext';
 import { Link } from 'react-router-dom';
 
@@ -6,71 +6,67 @@ function Inicio() {
   const { productos, setProductos, favoritos, setFavoritos } = useContext(ProductoContext);
 
   useEffect(() => {
-    if (productos.length === 0) {
-      const productosLocales = JSON.parse(localStorage.getItem('productos')) || [];
-      if (productosLocales.length > 0) {
-        setProductos(productosLocales);
-      } else {
-        fetch('https://fakestoreapi.com/products')
-          .then(res => res.json())
-          .then(data => {
-            const conBorrado = data.map(p => ({ ...p, eliminado: false }));
-            setProductos(conBorrado);
-            localStorage.setItem('productos', JSON.stringify(conBorrado));
-          });
-      }
-    }
-  }, [productos, setProductos]);
+    fetch('https://fakestoreapi.com/products')
+      .then(res => res.json())
+      .then(data => {
+        const productosLocales = JSON.parse(localStorage.getItem('productos')) || [];
+        const productosCombinados = [...data, ...productosLocales];
+        const conBorrado = productosCombinados.map(p => ({ ...p, eliminado: p.eliminado || false }));
+        setProductos(conBorrado);
+      });
+  }, []);
 
-  const productosVisibles = useMemo(() => {
-    return productos.filter(p => !p.eliminado);
-  }, [productos]);
-
-  const borrar = useCallback((id) => {
+  const borrar = (id) => {
     setProductos(prev =>
       prev.map(p => p.id === id ? { ...p, eliminado: true } : p)
     );
-  }, [setProductos]);
+  };
 
-  const toggleFavorito = useCallback((id) => {
+  const toggleFavorito = (id) => {
     if (favoritos.includes(id)) {
       setFavoritos(favoritos.filter(f => f !== id));
     } else {
       setFavoritos([...favoritos, id]);
     }
-  }, [favoritos, setFavoritos]);
+  };
+
+  const estiloBoton = {
+    width: "90px",
+    height: "90px",
+    backgroundColor: "#ffeb3b",
+    border: "3px solid #fdd835",
+    borderRadius: "50%",
+    fontSize: "0.8rem",
+    fontWeight: "bold",
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+    color: "#000",
+    boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+    textDecoration: "none",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center"
+  };
 
   return (
     <div className="container mt-4">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2>Listado de Productos</h2>
-        <button
-          className="btn btn-outline-danger"
-          onClick={() => {
-            localStorage.removeItem('isAutenticated');
-            localStorage.removeItem('sessionUser');
-            window.location.href = '/';
-          }}
-        >
-          Cerrar sesión
-        </button>
-      </div>
+      <h2 className="mb-3">Listado de Productos</h2>
 
       <div className="mb-3 d-flex justify-content-start gap-2">
-        <Link className="btn btn-success" to="/agregar">Agregar Producto</Link>
-        <Link className="btn btn-warning" to="/favoritos">Ver Favoritos ⭐</Link>
+        <Link to="/agregar" style={estiloBoton}>
+          Agregar
+        </Link>
+        <Link to="/favoritos" style={{ ...estiloBoton, backgroundColor: "#ffe082", borderColor: "#fbc02d" }}>
+          Favoritos
+        </Link>
       </div>
 
       <div className="row">
-        {productosVisibles.map(p => (
+        {productos.filter(p => !p.eliminado).map(p => (
           <div className="col-md-4 mb-3" key={`${p.id}-${p.title}`}>
             <div className="card h-100">
-              <img
-                src={p.image}
-                className="card-img-top"
-                alt={p.title}
-                style={{ height: '200px', objectFit: 'contain' }}
-              />
+              <img src={p.image} className="card-img-top" alt={p.title} style={{ height: '200px', objectFit: 'contain' }} />
               <div className="card-body">
                 <h5 className="card-title">{p.title}</h5>
                 <p className="card-text"><strong>ID:</strong> {p.id}</p>
@@ -93,10 +89,13 @@ function Inicio() {
                   </label>
                 </div>
 
-                <div className="d-flex justify-content-between flex-wrap gap-2">
-                  <Link to={`/detalle/${p.id}`} className="btn btn-info">Ver más</Link>
-                  <Link to={`/editar/${p.id}`} className="btn btn-secondary">Editar</Link>
-                  <button className="btn btn-danger" onClick={() => borrar(p.id)}>Borrar</button>
+                <div className="d-flex justify-content-between">
+                  <Link to={`/detalle/${p.id}`} style={{ ...estiloBoton, width: "80px", height: "80px" }}>
+                    Ver<br />más
+                  </Link>
+                  <button onClick={() => borrar(p.id)} style={{ ...estiloBoton, backgroundColor: "#ffcdd2", borderColor: "#ef5350", width: "80px", height: "80px" }}>
+                    Borrar
+                  </button>
                 </div>
               </div>
             </div>
