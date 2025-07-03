@@ -9,19 +9,30 @@ function Inicio() {
   const { userData, autenticado } = useContext(AuthContext);
 
   useEffect(() => {
-    const productosLocales = JSON.parse(localStorage.getItem("productos")) || [];
-    if (productosLocales.length > 0) {
-      setProductos(productosLocales);
-    } else {
-      fetch("https://fakestoreapi.com/products")
-        .then((res) => res.json())
-        .then((data) => {
-          const conBorrado = data.map((p) => ({ ...p, eliminado: false }));
-          setProductos(conBorrado);
-          localStorage.setItem("productos", JSON.stringify(conBorrado));
-        });
-    }
-  }, [setProductos]);
+  const productosLocales = JSON.parse(localStorage.getItem("productos")) || [];
+
+  fetch("https://fakestoreapi.com/products")
+    .then((res) => res.json())
+    .then((apiData) => {
+      const tienda = apiData.map((p) => ({ ...p, eliminado: false }));
+
+      // Unificar por ID: si el local ya tiene un producto con ese ID, se prioriza
+      const unificados = [...tienda];
+
+      productosLocales.forEach(local => {
+        const index = unificados.findIndex(p => p.id === local.id);
+        if (index >= 0) {
+          unificados[index] = local;
+        } else {
+          unificados.push(local);
+        }
+      });
+
+      setProductos(unificados);
+      localStorage.setItem("productos", JSON.stringify(unificados));
+    });
+}, [setProductos]);
+
 
   const productosVisibles = useMemo(
     () => productos.filter((p) => !p.eliminado),
