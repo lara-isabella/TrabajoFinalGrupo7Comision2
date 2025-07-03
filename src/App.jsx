@@ -6,7 +6,7 @@ import Registro from './assets/components/registro';
 import Inicio from './assets/components/Inicio';
 import AgregarProducto from './assets/components/agregarProducto';
 import DetalleProducto from './assets/components/detalleProducto';
-import EditarProducto from './assets/components/EditarProducto';
+import EditarProducto from './assets/components/editarProducto';
 import Favoritos from './assets/components/Favoritos';
 import AcercaDe from './assets/components/acercaDe';
 import PrivateRoute from './assets/components/privateroute';
